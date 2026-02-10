@@ -1,0 +1,49 @@
+import time
+import praw
+import pandas as pd
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+reddit = praw.Reddit(
+    client_id='Big_Cheesecake4815',
+    client_secret='-j8n9sXo2l3m1u7a9v0z5h8s9w',
+    user_agent='UCD_sentiment_analysis'
+)
+
+sub = reddit.subreddit('UCD')
+analyser = SentimentIntensityAnalyzer()
+data = []
+for post in sub.hot(limit=100):
+    text = (post.title or "") + " " + (post.selftext or "")
+    text = text.strip()
+    score = analyser.polarity_scores(text)
+    compound = score['compound']
+    if compound >= 0.05:
+        label = "Positive"
+    elif compound <= -0.05:
+        label = "Negative"
+    else:
+        label = "Neutral"
+    data.append({
+        'id': post.id,
+        'created_utc': post.created_utc,
+        'title': text, 
+        'selftext': post.selftext,
+        'text': text,
+        'score_upvotes': post.score,
+        'num_comments': post.num_comments,
+        'sent_negative': score['neg'],
+        'sent_neutral': score['neu'],
+        'sent_positive': score['pos'],
+        'sent_compound': compound,
+        'url': post.url,
+        'score': score['compound'], 
+        'label': label
+        })
+    
+    time.sleep(2)
+df = pd.DataFrame(data)
+df.to_csv('UCD_sentiment_analysis.csv', index=False)
+
+print("Saved: ", len(df), " posts with sentiment scores to UCD_sentiment_analysis.csv")
+print(df[["title", "sent_compound", "label"]].head(10))
+
