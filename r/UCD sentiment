@@ -3,10 +3,9 @@ import praw
 import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-reddit = praw.Reddit(
-    client_id='Big_Cheesecake4815',
-    client_secret='-j8n9sXo2l3m1u7a9v0z5h8s9w',
-    user_agent='UCD_sentiment_analysis'
+reddit = praw.Reddit(REDDIT_CLIENT_ID',
+    client_secret='REDDIT_CLIENT_SECRET',
+    user_agent='UCD_Sentiment_Analysis'
 )
 
 sub = reddit.subreddit('UCD')
